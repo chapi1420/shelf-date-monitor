@@ -34,7 +34,7 @@
             margin-bottom: 30px;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -58,13 +58,13 @@
             background-color: #45a049;
         }
 
-        .user-list {
+        .item-list {
             list-style-type: none;
             padding: 0;
             margin-top: 20px;
         }
 
-        .user-list li {
+        .item-list li {
             background-color: #f9f9f9;
             padding: 10px;
             margin-bottom: 10px;
@@ -75,14 +75,14 @@
             align-items: center;
         }
 
-        .user-list li a {
+        .item-list li a {
             text-decoration: none;
             color: #007BFF;
             padding: 5px 10px;
             margin: 0 5px;
         }
 
-        .user-list li a:hover {
+        .item-list li a:hover {
             background-color: #007BFF;
             color: white;
             border-radius: 5px;
@@ -101,36 +101,43 @@
 </head>
 <body>
     <div class="container">
-        <h1>User Management</h1>
+        <h1>Product Management</h1>
 
-        <h2>Add New User</h2>
+        <h2>Add New Product</h2>
         <form action="/add_item" method="POST">
             <input type="text" id="name" name="name" placeholder="Item Name" required>
-            <input type="text" id="name" name="category" placeholder="category" required>
-            <input type="text" id="name" name="expiry_date" placeholder="expiry_date" required>
-            <input type="text" id="name" name="quantity" placeholder="quantity" required>
-            <input type="text" id="name" name="unit" placeholder="unit" required>
-            <input type="text" id="name" name="storage_location" placeholder="storage_location" required>
-            <input type="text" id="name" name="notes" placeholder="notes" required>
-            <button type="submit">Add User</button>
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Dairy">Dairy</option>
+                <option value="Bakery">Bakery</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Vegetables">Vegetables</option>
+                <option value="Meat">Meat</option>
+            </select>
+            <input type="text" id="expiry_date" name="expiry_date" placeholder="Expiry Date, YYYY-MM-DD" required>
+            <input type="number" id="quantity" name="quantity" placeholder="Quantity" required>
+            <input type="text" id="unit" name="unit" placeholder="Unit" required>
+            <input type="text" id="storage_location" name="storage_location" placeholder="Storage Location" required>
+            <input type="text" id="notes" name="notes" placeholder="Notes" required>
+            <button type="submit">Add Item</button>
         </form>
 
         <h2>Items List</h2>
-<ul class="item-list">
-    {% for item in items %}
-        <li>
-            <span>
-                {{ item[1] }} - {{ item[2] }} | Expiry: {{ item[3] }} | Quantity: {{ item[4] }} {{ item[5] }} | Location: {{ item[6] }}
-            </span>
-            <div>
-                <a href="{{ url_for('update_item_route', id=item[0]) }}">Edit</a>
-                <a href="{{ url_for('delete_item_route', id=item[0]) }}" class="delete-link">Delete</a>
-            </div>
-        </li>
-    {% endfor %}
-</ul>
-
-       
+        <ul class="item-list">
+            {% for item in items %}
+                <li>
+                    <span>
+                        {{ item[1] }} - {{ item[2] }} | Expiry: {{ item[3] }} | Quantity: {{ item[4] }} {{ item[5] }} | Location: {{ item[6] }}
+                    </span>
+                    <div>
+                        <a href="{{ url_for('update_item_route', id=item[0]) }}">Edit</a>
+                        <a href="{{ url_for('delete_item_route', id=item[0]) }}" class="delete-link">Delete</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>
