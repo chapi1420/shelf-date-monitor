@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket Expiry Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Supermarket Expiry Management</h1>
+        <button class="btn btn-primary my-3" id="addProductBtn">Add Product</button>
+        <button class="btn btn-info my-3" id="suggestDiscountsBtn">Suggest Discounts</button>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Expiry Date</th>
+                    <th>Days Until Expiry</th>
+                    <th>Suggested Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="productList">
+                <!-- Product rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const products = [];
+
+        document.getElementById('addProductBtn').onclick = function() {
+            const productName = prompt("Enter product name:");
+            const productPrice = parseFloat(prompt("Enter product price:"));
+            const expiryDate = prompt("Enter expiry date (YYYY-MM-DD):");
+
+            const newProduct = {
+                name: productName,
+                price: productPrice,
+                expiry_date: expiryDate
+            };
+
+            // Add product to backend (API call)
+            fetch('/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newProduct)
+            })
+            .then(response => response.json())
+            .then(data => {
+                products.push(data);
+                displayProducts();
+            });
+        };
+
+        document.getElementById('suggestDiscountsBtn').onclick = function() {
+            // Fetch discount suggestions from backend (API call)
+            fetch('/api/suggest_discounts')
+            .then(response => response.json())
+            .then(suggestions => {
+                displaySuggestions(suggestions);
+            });
+        };
+
+        function displayProducts() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            products.forEach((product, index) => {
+                productList.innerHTML += `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td>${product.price.toFixed(2)}</td>
+                        <td>${product.expiry_date}</td>
+                        <td>${product.days_until_expiry}</td>
+                        <td>${product.suggested_price ? product.suggested_price.toFixed(2) : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteProduct(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function displaySuggestions(suggestions) {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            suggestions.forEach(item => {
+                productList.innerHTML += `
+                    <tr>
+                        <td>${item.product}</td>
+                        <td>${item.original_price.toFixed(2)}</td>
+                        <td>${item.expiry_date}</td>
+                        <td>${item.days_until_expiry}</td>
+                        <td>${item.suggested_price.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteProduct(${item.product_id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteProduct(index) {
+            // Delete product from backend (API call)
+            fetch(`/api/products/${index}`, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                products.splice(index, 1);
+                displayProducts();
+            });
+        }
+    </script>
+</body>
+</html>
